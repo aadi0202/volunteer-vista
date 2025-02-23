@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin - System Configuration</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="{{ url_for('home') }}" class="nav-brand">VolunteerVista</a>
+      <ul class="nav-links">
+        <li><a href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
+        <li><a href="{{ url_for('admin_logout') }}">Logout</a></li>
+      </ul>
+    </div>
+  </nav>
+  <div class="container" style="padding:2rem;">
+    <h1>System Configuration</h1>
+    <form method="post">
+      <div>
+        <label for="announcement">Site Announcement:</label>
+        <input type="text" id="announcement" name="announcement" placeholder="Enter announcement" value="{{ system_config.announcement if system_config else '' }}">
+      </div>
+      <div>
+        <label for="maintenance">Maintenance Mode:</label>
+        <select id="maintenance" name="maintenance">
+          <option value="off" {% if system_config and not system_config.maintenance_mode %}selected{% endif %}>Off</option>
+          <option value="on" {% if system_config and system_config.maintenance_mode %}selected{% endif %}>On</option>
+        </select>
+      </div>
+      <button type="submit">Save Configuration</button>
+    </form>
+    
+    <!-- Delete Announcement Button -->
+    <form action="{{ url_for('delete_announcement') }}" method="post" style="margin-top:1rem;">
+      <button type="submit" class="delete-button">Delete Announcement</button>
+    </form>
+  </div>
+  <footer class="footer">
+    <small>© 2025 VolunteerVista</small>
+  </footer>
+</body>
+</html>

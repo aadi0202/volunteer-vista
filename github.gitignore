@@ -1,0 +1,17 @@
+# Byte-compiled files
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+venv/
+env/
+.virtualenvs/
+
+# Instance folder for Flask (if it contains sensitive config)
+instance/
+
+# Environment variables
+secret_key.env
+
+# OS-specific files
+.DS_Store

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin - User Management</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Shared styles and Google Fonts -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <style>
+    /* User Card Styles */
+    .user-card {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+    .user-card img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+    .edit-button {
+      padding: 0.5rem 1rem;
+      background-color: var(--primary-color);
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .edit-button:hover {
+      background-color: var(--secondary-color);
+    }
+    /* Modal Styles (similar to previous modals) */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.4);
+    }
+    .modal-content {
+      background-color: #fefefe;
+      margin: 10% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+      max-width: 600px;
+      border-radius: 8px;
+      position: relative;
+    }
+    .close {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      color: #aaa;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .close:hover {
+      color: #000;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="{{ url_for('home') }}" class="nav-brand">VolunteerVista</a>
+      <ul class="nav-links">
+        <li><a href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
+        <li><a href="{{ url_for('admin_logout') }}">Logout</a></li>
+      </ul>
+    </div>
+  </nav>
+  
+  <div class="container" style="padding:2rem;">
+    <h1>Admin - User Management</h1>
+
+    <!-- NGO Accounts -->
+    <h2>NGO Accounts</h2>
+    <div class="ngo-listings">
+      {% for ngo in ngos %}
+      <div class="user-card">
+        <img src="{{ url_for('static', filename=ngo.logo_filename or 'images/image_spare.png') }}" alt="NGO Logo">
+        <div>
+          <h3>{{ ngo.ngo_name }}</h3>
+          <p><strong>Email:</strong> {{ ngo.email }}</p>
+          <p><strong>Summary:</strong> {{ ngo.ngo_summary }}</p>
+        </div>
+        <!-- Existing Edit button -->
+        <button class="edit-button" onclick="openNgoModal('{{ ngo.email }}')">Edit</button>
+        <!-- New Delete button inside a form -->
+        <form action="{{ url_for('admin_delete_ngo') }}" method="post" onsubmit="return confirm('Are you sure you want to delete this NGO account?');" style="display:inline;">
+          <input type="hidden" name="email" value="{{ ngo.email }}">
+          <button type="submit" class="delete-button" style="background-color: #e74c3c; color: #fff; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer;">Delete</button>
+        </form>
+      </div>
+      <!-- NGO Edit Modal -->
+      <div class="modal" id="ngo-modal-{{ ngo.email }}">
+        <div class="modal-content">
+          <span class="close" onclick="closeNgoModal('{{ ngo.email }}')">&times;</span>
+          <h2>Edit NGO Account</h2>
+          <form action="{{ url_for('admin_edit_ngo') }}" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="email" value="{{ ngo.email }}">
+            <p>
+              <label>Email:</label><br>
+              <span>{{ ngo.email }}</span>
+              <input type="hidden" name="email" value="{{ ngo.email }}">
+            </p>
+            <p>
+              <label for="ngo_name_{{ ngo.email }}">NGO Name:</label><br>
+              <input type="text" id="ngo_name_{{ ngo.email }}" name="ngo_name" value="{{ ngo.ngo_name }}" required>
+            </p>
+            <p>
+              <label for="password_{{ ngo.email }}">Password:</label><br>
+              <!-- Display current password (for admin use only) and allow update -->
+              <input type="text" id="password_{{ ngo.email }}" name="password" value="{{ ngo.password }}" required>
+            </p>
+            <p>
+              <label for="ngo_summary_{{ ngo.email }}">NGO Summary:</label><br>
+              <textarea id="ngo_summary_{{ ngo.email }}" name="ngo_summary" required>{{ ngo.ngo_summary }}</textarea>
+            </p>
+            <p>
+              <label for="logo_{{ ngo.email }}">Change Logo:</label><br>
+              <input type="file" id="logo_{{ ngo.email }}" name="logo" accept="image/*">
+            </p>
+            <p>
+              <label for="delete_logo_{{ ngo.email }}">Delete Current Logo:</label>
+              <input type="checkbox" id="delete_logo_{{ ngo.email }}" name="delete_logo">
+            </p>
+            <button type="submit" class="edit-button">Save Changes</button>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Volunteer Accounts -->
+    <h2>Volunteer Accounts</h2>
+    <div class="volunteer-list">
+      {% for volunteer in volunteers %}
+      <div class="user-card">
+        <img src="{{ url_for('static', filename=volunteer.profile_pic or 'images/image_spare.png') }}" alt="Volunteer Profile Pic">
+        <div>
+          <h3>{{ volunteer.first_name }} {{ volunteer.last_name }}</h3>
+          <p>Email: {{ volunteer.email }}</p>
+          <p>Username: {{ volunteer.username }}</p>
+        </div>
+        <!-- Existing Edit button -->
+        <button class="edit-button" onclick="openVolunteerModal('{{ volunteer.email }}')">Edit</button>
+        <!-- New Delete button inside a form -->
+        <form action="{{ url_for('admin_delete_volunteer') }}" method="post" onsubmit="return confirm('Are you sure you want to delete this volunteer account?');" style="display:inline;">
+          <input type="hidden" name="email" value="{{ volunteer.email }}">
+          <button type="submit" class="delete-button" style="background-color: #e74c3c; color: #fff; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer;">Delete</button>
+        </form>
+      </div>
+      <!-- Volunteer Edit Modal -->
+<div class="modal" id="volunteer-modal-{{ volunteer.email }}">
+  <div class="modal-content">
+    <span class="close" onclick="closeVolunteerModal('{{ volunteer.email }}')">&times;</span>
+    <h2>Edit Volunteer Account</h2>
+    <form action="{{ url_for('admin_edit_volunteer') }}" method="post" enctype="multipart/form-data">
+      <input type="hidden" name="email" value="{{ volunteer.email }}">
+      <p>
+        <label>Email:</label><br>
+        <span>{{ volunteer.email }}</span>
+        <input type="hidden" name="email" value="{{ volunteer.email }}">
+      </p>
+      <p>
+        <label for="first_name_{{ volunteer.email }}">First Name:</label><br>
+        <input type="text" id="first_name_{{ volunteer.email }}" name="first_name" value="{{ volunteer.first_name }}" required>
+      </p>
+      <p>
+        <label for="last_name_{{ volunteer.email }}">Last Name:</label><br>
+        <input type="text" id="last_name_{{ volunteer.email }}" name="last_name" value="{{ volunteer.last_name }}" required>
+      </p>
+      <p>
+        <label for="username_{{ volunteer.email }}">Username:</label><br>
+        <input type="text" id="username_{{ volunteer.email }}" name="username" value="{{ volunteer.username }}">
+      </p>
+      <p>
+        <label for="password_{{ volunteer.email }}">Password:</label><br>
+        <!-- Display current password (for admin use only) and allow update -->
+        <input type="text" id="password_{{ volunteer.email }}" name="password" value="{{ volunteer.password }}" required>
+      </p>
+      <p>
+        <label for="phone_{{ volunteer.email }}">Phone:</label><br>
+        <input type="text" id="phone_{{ volunteer.email }}" name="phone" value="{{ volunteer.phone }}">
+      </p>
+      <p>
+        <label for="state_{{ volunteer.email }}">State:</label><br>
+        <input type="text" id="state_{{ volunteer.email }}" name="state" value="{{ volunteer.state }}">
+      </p>
+      <p>
+        <label for="city_{{ volunteer.email }}">City:</label><br>
+        <input type="text" id="city_{{ volunteer.email }}" name="city" value="{{ volunteer.city }}">
+      </p>
+      <p>
+        <label for="address_{{ volunteer.email }}">Address:</label><br>
+        <input type="text" id="address_{{ volunteer.email }}" name="address" value="{{ volunteer.address }}">
+      </p>
+      <p>
+        <label for="age_{{ volunteer.email }}">Age:</label><br>
+        <input type="number" id="age_{{ volunteer.email }}" name="age" value="{{ volunteer.age }}">
+      </p>
+      <p>
+        <label for="volunteer_experience_{{ volunteer.email }}">Volunteer Experience:</label><br>
+        <textarea id="volunteer_experience_{{ volunteer.email }}" name="volunteer_experience">{{ volunteer.volunteer_experience }}</textarea>
+      </p>
+      <p>
+        <label for="work_experience_{{ volunteer.email }}">Work Experience:</label><br>
+        <textarea id="work_experience_{{ volunteer.email }}" name="work_experience">{{ volunteer.work_experience }}</textarea>
+      </p>
+      <p>
+        <label for="education_{{ volunteer.email }}">Education:</label><br>
+        <textarea id="education_{{ volunteer.email }}" name="education">{{ volunteer.education }}</textarea>
+      </p>
+      <p>
+        <label for="skills_{{ volunteer.email }}">Skills:</label><br>
+        <input type="text" id="skills_{{ volunteer.email }}" name="skills" value="{{ volunteer.skills }}">
+      </p>
+      <p>
+        <label for="areas_of_interest_{{ volunteer.email }}">Areas of Interest:</label><br>
+        <input type="text" id="areas_of_interest_{{ volunteer.email }}" name="areas_of_interest" value="{{ volunteer.areas_of_interest }}">
+      </p>
+      <p>
+        <label for="certifications_{{ volunteer.email }}">Certifications:</label><br>
+        <input type="text" id="certifications_{{ volunteer.email }}" name="certifications" value="{{ volunteer.certifications }}">
+      </p>
+      <p>
+        <label for="availability_{{ volunteer.email }}">Availability:</label><br>
+        <input type="text" id="availability_{{ volunteer.email }}" name="availability" value="{{ volunteer.availability }}">
+      </p>
+      <p>
+        <label for="duration_{{ volunteer.email }}">Duration:</label><br>
+        <input type="text" id="duration_{{ volunteer.email }}" name="duration" value="{{ volunteer.duration }}">
+      </p>
+      <p>
+        <label for="start_date_{{ volunteer.email }}">Start Date:</label><br>
+        <input type="text" id="start_date_{{ volunteer.email }}" name="start_date" value="{{ volunteer.start_date }}">
+      </p>
+      <p>
+        <label for="profile_pic_{{ volunteer.email }}">Change Profile Picture:</label><br>
+        <input type="file" id="profile_pic_{{ volunteer.email }}" name="profile_pic" accept="image/*">
+      </p>
+      <p>
+        <label for="delete_pic_{{ volunteer.email }}">Delete Current Picture:</label>
+        <input type="checkbox" id="delete_pic_{{ volunteer.email }}" name="delete_pic">
+      </p>
+      <button type="submit" class="edit-button">Save Changes</button>
+    </form>
+      </div>
+    </div>
+      {% endfor %}
+    </div>
+  </div>
+  
+  <footer class="footer">
+    <small>© 2025 VolunteerVista</small>
+  </footer>
+  
+  <script>
+    // Functions to open/close NGO modals
+    function openNgoModal(email) {
+      document.getElementById('ngo-modal-' + email).style.display = 'block';
+    }
+    function closeNgoModal(email) {
+      document.getElementById('ngo-modal-' + email).style.display = 'none';
+    }
+    // Functions to open/close Volunteer modals
+    function openVolunteerModal(email) {
+      document.getElementById('volunteer-modal-' + email).style.display = 'block';
+    }
+    function closeVolunteerModal(email) {
+      document.getElementById('volunteer-modal-' + email).style.display = 'none';
+    }
+  </script>
+</body>
+</html>

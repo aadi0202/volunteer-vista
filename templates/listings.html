@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NGO Listings - VolunteerVista</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="{{ url_for('home') }}" class="nav-brand">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="VolunteerVista Logo" width="40" height="40" style="vertical-align: middle;">
+        VolunteerVista
+      </a>
+      <ul class="nav-links">
+        <li><a href="{{ url_for('home') }}">Home</a></li>
+        {% if session.get('user_type') == 'ngo' %}
+          <li><a href="{{ url_for('ngo_dashboard') }}">My Dashboard</a></li>
+          <li><a href="{{ url_for('ngo_logout') }}">Logout</a></li>
+        {% elif session.get('user_type') == 'volunteer' %}
+          <li><a href="{{ url_for('volunteer_dashboard') }}">My Dashboard</a></li>
+          <li><a href="{{ url_for('volunteer_logout') }}">Logout</a></li>
+        {% else %}
+          <li><a href="{{ url_for('ngo_signup') }}">For NGOs</a></li>
+          <li><a href="{{ url_for('volunteer_login') }}">Volunteer Login</a></li>
+          <li><a href="{{ url_for('volunteer_signup') }}">Volunteer Sign Up</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Listing Page Content -->
+  <div class="container" style="padding: 2rem;">
+    <h1>NGO Listings</h1>
+    <!-- Search Form -->
+    <form method="POST" action="{{ url_for('listings') }}">
+      <input type="text" name="search_query" placeholder="Search for NGOs..." value="{{ search_query }}">
+      <button type="submit">Search</button>
+    </form>
+
+    <div class="ngo-listings">
+      {% if results %}
+        {% for ngo in results %}
+          <div class="ngo-card">
+            <!-- Display NGO logo or fallback to default -->
+            <img src="{{ url_for('static', filename=ngo.logo_filename or 'images/image_spare.png') }}" alt="NGO Logo" class="ngo-image">
+            
+            <div class="ngo-info">
+              <h2>{{ ngo.ngo_name }}</h2>
+              <p>{{ ngo.ngo_summary }}</p>
+            </div>
+            <!-- Conditional JOIN button -->
+            {% if session.get('user_type') == 'volunteer' %}
+            <form action="{{ url_for('join_ngo', ngo_id=ngo.email) }}" method="post">
+              <button class="join-button" type="submit">Join</button>
+            </form>
+            {% elif session.get('user_type') == 'ngo' %}
+              <button class="join-button" type="button" disabled>Join</button>
+            {% else %}
+              <a href="{{ url_for('volunteer_login') }}">
+                <button class="join-button" type="button">Join</button>
+              </a>
+            {% endif %}
+          </div>
+        {% endfor %}
+      {% else %}
+        <p>No NGOs found.</p>
+      {% endif %}
+    </div>
+  <!-- Footer -->
+  <footer class="footer">
+    <small>
+      <img src="{{ url_for('static', filename='images/logo.png') }}" alt="VolunteerVista Logo" width="30" height="30" style="vertical-align: middle;">
+      © 2025 VolunteerVista
+    </small>
+  </footer>
+</body>
+</html>

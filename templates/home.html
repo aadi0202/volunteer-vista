@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Home - VolunteerVista</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Google Fonts: Poppins & Montserrat -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Poppins:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Link to Your Custom CSS (no Bootstrap) -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
+  </head>
+  <body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+      <div class="nav-container">
+        <a href="{{ url_for('home') }}" class="nav-brand">
+          <img src="{{ url_for('static', filename='images/logo.png') }}" alt="VolunteerVista Logo" width="40" height="40" style="vertical-align: middle;">
+          VolunteerVista
+        </a>
+        <ul class="nav-links">
+          <li><a href="{{ url_for('listings') }}">Listings</a></li>
+          {% if session.get('user_type') == 'ngo' %}
+            <li><a href="{{ url_for('ngo_dashboard') }}">My Dashboard</a></li>
+            <li><a href="{{ url_for('ngo_logout') }}">Logout</a></li>
+          {% elif session.get('user_type') == 'volunteer' %}
+            <li><a href="{{ url_for('volunteer_dashboard') }}">My Dashboard</a></li>
+            <li><a href="{{ url_for('volunteer_logout') }}">Logout</a></li>
+          {% elif session.get('user_type') == 'admin' %}
+            <li><a href="{{ url_for('admin_dashboard') }}">My Dashboard</a></li>
+            <li><a href="{{ url_for('admin_logout') }}">Logout</a></li>
+          {% else %}
+            <li><a href="{{ url_for('ngo_signup') }}">For NGOs</a></li>
+            <li><a href="{{ url_for('volunteer_login') }}">Volunteer Login</a></li>
+            <li><a href="{{ url_for('volunteer_signup') }}">Volunteer Sign Up</a></li>
+          {% endif %}
+        </ul>
+      </div>
+    </nav>
+    {% if system_config and system_config.announcement %}
+      <div class="announcement-banner">
+        <p> <strong>Announcement: </strong>{{ system_config.announcement }}</p>
+        {% if system_config.maintenance_mode %}
+        <p class="maintenance-message">The site is currently under maintenance. You might experience issues. Apologies for the inconvenience.</p>
+        {% endif %}
+      </div>
+    {% endif %}
+    
+    <!-- Hero Section -->
+    <header class="hero-section">
+      <h1>
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="VolunteerVista Logo" width="50" height="50" style="vertical-align: middle;">
+        VolunteerVista
+      </h1>
+      <p class="hero-tagline">Empowering Change, One Connection at a Time</p>
+      <a href="{{ url_for('listings') }}" class="hero-button">VIEW LISTINGS!</a>
+    </header>
+
+    <!-- About Section -->
+    <section class="about-section">
+      <h2>About the Website</h2>
+      <p>
+          Our platform is a dynamic listing hub designed to connect NGOs with potential volunteers. NGOs can easily sign up to create and manage their profiles, post detailed listings about their missions and volunteer opportunities, and publish them for public viewing. Volunteers can freely browse these NGO listings—much like shopping for products online—without needing to log in. When a volunteer is ready to make a commitment, they simply register or log in and submit an application that includes their personal details, skills, availability, and motivation. NGOs then review these applications, accepting or rejecting candidates as they see fit. This streamlined, user-friendly process fosters meaningful connections and empowers NGOs to build effective, passionate teams.
+      </p>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <small>
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="VolunteerVista Logo" width="30" height="30" style="vertical-align: middle;">
+        © 2025 VolunteerVista
+      </small>
+    </footer>
+  </body>
+</html>

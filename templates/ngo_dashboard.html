@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NGO Dashboard - VolunteerVista</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <style>
+      .dashboard-tabs button {
+      padding: 0.5rem 1rem;
+      background-color: var(--primary-color);
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+    }
+
+    .dashboard-tabs button:hover {
+      background-color: var(--secondary-color);
+    }
+
+    .dashboard-content {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="{{ url_for('home') }}" class="nav-brand">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="VolunteerVista Logo" width="40" height="40" style="vertical-align: middle;">
+        VolunteerVista
+      </a>
+      <ul class="nav-links">
+        <li><a href="{{ url_for('home') }}">Home</a></li>
+        <li><a href="{{ url_for('listings') }}">View Listings</a></li>
+        <!-- Notification bell icon -->
+        <li class="notification">
+          <a href="javascript:void(0)" onclick="toggleNotifications()">
+            &#128276; <!-- Unicode bell icon -->
+            {% if notifications and notifications|length > 0 %}
+              <span class="badge">{{ notifications|length }}</span>
+            {% endif %}
+          </a>
+          <div id="notificationDropdown" class="notification-dropdown">
+            {% if notifications %}
+              {% for notif in notifications %}
+                <div class="notification-item" onclick="markAsRead({{ notif.id }})">
+                  <p>{{ notif.content }}</p>
+                  <small>{{ notif.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</small>
+                </div>
+              {% endfor %}
+            {% else %}
+              <div class="notification-item"><p>No new notifications</p></div>
+            {% endif %}
+          </div>
+        </li>
+        <li><a href="{{ url_for('ngo_logout') }}">Logout</a></li>
+      </ul>
+    </div>
+  </nav>
+  <!-- NGO Dashboard -->
+  <div class="container" style="padding: 2rem;">
+    <h1>NGO Dashboard</h1>
+    <!-- Dashboard Tabs -->
+    <div class="toggle-bar">
+      <input type="radio" id="toggle-connections" name="toggle" value="connections" checked onclick="showTab('connections')">
+      <label for="toggle-connections">Joined Volunteers</label>
+      <input type="radio" id="toggle-profile" name="toggle" value="profile" onclick="showTab('profile')">
+      <label for="toggle-profile">Profile</label>
+    </div>
+
+<!-- Connections Section -->
+<div id="connections" class="dashboard-content">
+  <h2>Volunteers Who Joined Your NGO</h2>
+  {% if applications %}
+    <div class="volunteer-list">
+      {% for req in applications %}
+        {% set volunteer = Volunteer.query.filter_by(email=req.volunteer_email).first() %}
+        {% if volunteer %}
+          <div class="volunteer-card" style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; display: flex; align-items: center;">
+            <!-- Clickable area for modal -->
+            <div onclick="openModal('{{ req.id }}')" style="flex-grow: 1; cursor: pointer; display: flex; align-items: center;">
+              <img src="{{ url_for('static', filename=volunteer.profile_pic or 'images/image_spare.png') }}"
+                   alt="Volunteer Profile Pic"
+                   style="width: 80px; height: 80px; object-fit: cover; border-radius: 50%; margin-right: 10px;">
+              <div class="volunteer-info">
+                <h3 style="margin: 0;">{{ volunteer.first_name }} {{ volunteer.last_name }}</h3>
+                <p style="margin: 5px 0;">Email: {{ volunteer.email }}</p>
+              </div>
+            </div>
+            <!-- Dropdown to update status -->
+            <div class="volunteer-status" style="margin-left: 10px;">
+              <form action="{{ url_for('update_volunteer_status', join_request_id=req.id) }}" method="post">
+                <select name="status" onchange="event.stopPropagation(); this.form.submit();">
+                  <option value="pending" {% if req.status == 'pending' %}selected{% endif %}>Pending</option>
+                  <option value="accepted" {% if req.status == 'accepted' %}selected{% endif %}>Accepted</option>
+                  <option value="rejected" {% if req.status == 'rejected' %}selected{% endif %}>Rejected</option>
+                </select>
+              </form>
+            </div>
+            <button onclick="window.location.href='{{ url_for('chat', partner_email=volunteer.email) }}'">Chat</button>
+          </div>
+          <!-- Modal for Detailed Info (if needed) -->
+          <div class="modal" id="volunteer-modal-{{ req.id }}" style="display: none;">
+            <div class="modal-content" style="background: #fff; padding: 20px; position: relative; max-width: 600px; margin: 100px auto; border-radius: 8px;">
+              <span class="close" onclick="closeModal('{{ req.id }}')" 
+                    style="position: absolute; top: 10px; right: 20px; cursor: pointer; font-size: 24px;">&times;</span>
+              <h2>{{ volunteer.first_name }} {{ volunteer.last_name }}</h2>
+              <img src="{{ url_for('static', filename=volunteer.profile_pic or 'images/image_spare.png') }}"
+                   alt="Volunteer Profile Pic"
+                   style="width: 80px; height: 80px; object-fit: cover; border-radius: 50%; float: right; margin-left: 10px;">
+              <p><strong>Email:</strong> {{ volunteer.email }}</p>
+              <p><strong>Phone:</strong> {{ volunteer.phone }}</p>
+              <p><strong>State:</strong> {{ volunteer.state }}</p>
+              <p><strong>City:</strong> {{ volunteer.city }}</p>
+              <p><strong>Address:</strong> {{ volunteer.address }}</p>
+              <p><strong>Age:</strong> {{ volunteer.age }}</p>
+              <p><strong>Volunteer Experience:</strong> {{ volunteer.volunteer_experience }}</p>
+              <p><strong>Work Experience:</strong> {{ volunteer.work_experience }}</p>
+              <p><strong>Education:</strong> {{ volunteer.education }}</p>
+              <p><strong>Skills:</strong> {{ volunteer.skills }}</p>
+              <p><strong>Areas of Interest:</strong> {{ volunteer.areas_of_interest }}</p>
+              <p><strong>Certifications:</strong> {{ volunteer.certifications }}</p>
+              <p><strong>Availability:</strong> {{ volunteer.availability }}</p>
+              <p><strong>Duration:</strong> {{ volunteer.duration }}</p>
+              <p><strong>Start Date:</strong> {{ volunteer.start_date }}</p>
+              <p><strong>Status:</strong> {{ req.status }}</p>
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  {% else %}
+    <p>No volunteers have joined your NGO yet.</p>
+  {% endif %}
+</div>
+
+<!-- Profile Section -->
+<div id="profile" class="dashboard-content" style="display:none;">
+  <h2>Your NGO Profile</h2>
+  <div class="ngo-profile">
+    <img src="{{ url_for('static', filename=ngo.logo_filename) }}" alt="NGO Logo" class="ngo-logo" style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%;">
+    <h3>{{ ngo.ngo_name }}</h3>
+    <p>{{ ngo.ngo_summary }}</p>
+  </div>
+
+  <hr>
+
+  <h2>Edit Profile</h2>
+  <form action="{{ url_for('ngo_edit') }}" method="post" enctype="multipart/form-data">
+    <div>
+      <label>Email:</label>
+      <span>{{ ngo.email }}</span>
+      <input type="hidden" name="email" value="{{ ngo.email }}">
+    </div>
+    <div>
+    <label for="password">Password:</label>
+          <span style="display: inline-flex; align-items: center;">
+            <input type="password" id="password" name="password" value="{{ ngo.password }}" style="vertical-align: middle;"/>
+            <button type="button" id="togglePassword" onclick="togglePasswordVisibility()" style="margin-left: 8px; vertical-align: middle;">Show</button>
+          </span>
+        </div>      
+    <div>
+      <label for="ngo_name">NGO Name:</label>
+      <input type="text" id="ngo_name" name="ngo_name" value="{{ ngo.ngo_name }}" required>
+    </div>
+    <div>
+      <label for="ngo_summary">NGO Work Summary:</label>
+      <textarea id="ngo_summary" name="ngo_summary" required>{{ ngo.ngo_summary }}</textarea>
+    </div>
+    <div>
+      <label for="logo">Change Logo:</label>
+      <input type="file" id="logo" name="logo" accept="image/*">
+    </div>
+    <div>
+      <label for="delete_logo" style="display: inline; vertical-align: middle;">Delete Current Logo:</label>
+      <input type="checkbox" id="delete_pic" name="delete_pic" style="display: inline; vertical-align: middle; margin-left: 10px;" />
+    </div>
+    <div>
+      <button type="submit">Update Profile</button>
+    </div>
+  </form>
+</div>
+  <!-- Footer -->
+  <footer class="footer">
+    <small>
+      <img src="{{ url_for('static', filename='images/logo.png') }}" alt="VolunteerVista Logo" width="30" height="30" style="vertical-align: middle;">
+      © 2025 VolunteerVista
+    </small>
+  </footer>
+  <script>
+    // Read active tab from query parameter (default is 'connections')
+    var activeTab = "{{ request.args.get('tab', 'connections') }}";
+    
+    function showTab(tabName) {
+      document.getElementById('connections').style.display = (tabName === 'connections') ? 'block' : 'none';
+      document.getElementById('profile').style.display = (tabName === 'profile') ? 'block' : 'none';
+    }
+    
+    document.addEventListener("DOMContentLoaded", function() {
+      showTab(activeTab);
+    });
+    
+    // Modal open and close functions for volunteer details
+    function openModal(volunteerId) {
+      var modal = document.getElementById('volunteer-modal-' + volunteerId);
+      if (modal) {
+        modal.style.display = 'block';
+      }
+    }
+    
+    function closeModal(volunteerId) {
+      var modal = document.getElementById('volunteer-modal-' + volunteerId);
+      if (modal) {
+        modal.style.display = 'none';
+      }
+    }
+    function togglePasswordVisibility() {
+      var passwordField = document.getElementById('password');
+      var toggleButton = document.getElementById('togglePassword');
+      if (passwordField.type === 'password') {
+        passwordField.type = 'text';
+        toggleButton.textContent = 'Hide';
+      } else {
+        passwordField.type = 'password';
+        toggleButton.textContent = 'Show';
+      }
+    }
+    function toggleNotifications(){
+      var dropdown = document.getElementById("notificationDropdown");
+      if(dropdown.style.display === "block"){
+          dropdown.style.display = "none";
+      } else {
+          dropdown.style.display = "block";
+      }
+    }
+
+  // Function to mark a notification as read via an AJAX POST request.
+    function markAsRead(notifId){
+        fetch('/mark_notification_read/' + notifId, { method: 'POST' })
+        .then(response => response.json())
+        .then(data => {
+            if(data.success){
+                // Reload the page or remove the notification from the DOM.
+                location.reload();
+            }
+        });
+      }
+
+  // Hide the notification dropdown if clicked outside of it.
+    window.onclick = function(event) {
+      if (!event.target.matches('.notification a')) {
+        var dropdown = document.getElementById("notificationDropdown");
+        if (dropdown && dropdown.style.display === "block") {
+          dropdown.style.display = "none";
+        }
+      }
+    }
+  </script>
+
+</body>
+</html>

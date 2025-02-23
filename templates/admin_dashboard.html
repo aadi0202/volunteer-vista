@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard - VolunteerVista</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="{{ url_for('home') }}" class="nav-brand">VolunteerVista</a>
+      <ul class="nav-links">
+        <li><a href="{{ url_for('home') }}">Home</a></li>
+        <li><a href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
+        <li><a href="{{ url_for('admin_logout') }}">Logout</a></li>
+      </ul>
+    </div>
+  </nav>
+  <div class="container" style="padding:2rem;">
+    <h1>Admin Dashboard</h1>
+    <ul>
+      <li><a href="{{ url_for('admin_users') }}">User Management</a></li>
+      <li><a href="{{ url_for('admin_join_requests') }}">Join Request Oversight</a></li>
+      <li><a href="{{ url_for('admin_system_config') }}">System Configuration</a></li>
+      <li><a href="{{ url_for('admin_content_moderation') }}">Content Moderation</a></li>
+      <li><a href="{{ url_for('admin_chat_logs') }}">Chat Log Viewing</a></li>
+    </ul>
+  </div>
+  <footer class="footer">
+    <small>© 2025 VolunteerVista</small>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,591 @@
+/************************
+ *   CSS VARIABLES
+ ************************/
+ :root {
+  --primary-color: #00bcd4;   /* Light teal */
+  --secondary-color: #ff5252; /* Vibrant red */
+  --dark-color: #111111;
+  --light-color: #f8f9fa;
+  --heading-font: 'Montserrat', sans-serif;
+  --body-font: 'Poppins', sans-serif;
+}
+
+/************************
+ *   GLOBAL RESETS
+ ************************/
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--body-font);
+  background-color: var(--light-color);
+  color: var(--dark-color);
+  line-height: 1.5;
+}
+
+/************************
+ * UTILITY CLASSES & CONTAINERS
+ ************************/
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+/************************
+ *   CARD STYLES
+ ************************/
+.card {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 2rem;
+  margin: 2rem auto;
+  max-width: 500px;
+}
+
+/************************
+ *   FORM STYLES
+ ************************/
+.form-group {
+  margin-bottom: 1rem;
+}
+
+form label {
+  display: block;
+  font-weight: bold;
+}
+
+form input[type="text"],
+form input[type="email"],
+form input[type="password"],
+form input[type="number"],
+form textarea,
+form input[type="file"] {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+  font-family: var(--body-font);
+}
+
+form input:focus,
+form textarea:focus {
+  border-color: var(--primary-color);
+  outline: none;
+  box-shadow: 0 0 5px rgba(0,188,212,0.5);
+}
+
+button {
+  background-color: var(--primary-color);
+  color: #fff;
+  padding: 0.3rem 1.0rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: var(--body-font);
+  font-size: medium;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: var(--secondary-color);
+}
+
+.error-message {
+  color: var(--secondary-color);
+  background-color: #ffe6e6;
+  border: 1px solid var(--secondary-color);
+  padding: 0.5rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+/************************
+ *   NAVIGATION
+ ************************/
+.navbar {
+  background-color: var(--dark-color);
+  padding: 1rem;
+}
+
+.nav-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.nav-brand {
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-family: var(--heading-font);
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 1.5rem;
+}
+
+.nav-links a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.nav-links a:hover {
+  color: var(--secondary-color);
+}
+
+/************************
+ *   HERO SECTION
+ ************************/
+.hero-section {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  background: radial-gradient(circle, var(--dark-color), var(--primary-color));
+  text-align: center;
+  color: #fff;
+}
+
+.hero-section h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  font-family: var(--heading-font);
+}
+
+.hero-tagline {
+  font-size: 1.2rem;
+  max-width: 600px;
+  margin-bottom: 2rem;
+}
+
+.hero-button {
+  background-color: #fff;
+  color: var(--dark-color);
+  text-decoration: none;
+  padding: 0.8rem 1.5rem;
+  font-weight: bold;
+  border-radius: 4px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.hero-button:hover {
+  background-color: var(--dark-color);
+  color: #fff;
+}
+
+/************************
+ *   ABOUT SECTION
+ ************************/
+.about-section {
+  max-width: 800px;
+  margin: 3rem auto;
+  padding: 0 1rem;
+}
+
+.about-section h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  font-family: var(--heading-font);
+}
+
+.about-section p {
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+/************************
+ *   FOOTER
+ ************************/
+.footer {
+  background-color: #fff;
+  color: var(--dark-color);
+  text-align: center;
+  padding: 1rem 0;
+  border-top: 1px solid #ddd;
+}
+
+/************************
+ *   NGO LISTING STYLES
+ ************************/
+.ngo-listings {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.ngo-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 1rem;
+}
+
+.ngo-image {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.ngo-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.join-button {
+  padding: 0.5rem 1rem;
+  background-color: var(--primary-color);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.join-button:hover {
+  background-color: var(--secondary-color);
+}
+
+/************************
+ *   GENERAL DASHBOARD
+ ************************/
+.dashboard-tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.dashboard-content {
+  margin-top: 1rem;
+}
+
+/************************
+ *   NGO DASHBOARD
+ ************************/
+.volunteer-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.volunteer-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.volunteer-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 1rem;
+}
+
+.ngo-profile {
+  text-align: center;
+  margin: 1rem 0;
+}
+
+.ngo-logo {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.modal {
+  position: fixed;
+  z-index: 999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.4);
+  padding-top: 60px;
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: auto;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 600px;
+  position: relative;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.close {
+  color: #aaa;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/************************
+ *   VOLUNTEER DASHBOARD
+ ************************/
+.volunteer-profile {
+  text-align: center;
+  margin: 1rem 0;
+}
+
+/************************
+ *   CHAT INTERFACE
+ ************************/
+#chat {
+  border: 1px solid #ccc;
+  padding: 10px;
+  height: 400px;
+  overflow-y: scroll;
+  background-color: #fff;
+  margin-bottom: 1rem;
+}
+
+#message-input {
+  width: 80%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-right: 0.5rem;
+}
+
+#send-btn {
+  padding: 0.5rem 1rem;
+  background-color: var(--primary-color);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#send-btn:hover {
+  background-color: var(--secondary-color);
+}
+
+.back-button {
+  display: inline-block;
+  background-color: var(--primary-color);
+  color: #fff;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.back-button:hover {
+  background-color: var(--secondary-color);
+}
+
+.partner-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.partner-card img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.volunteer-info, .ngo-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.message {
+  max-width: 70%;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  border-radius: 10px;
+  clear: both;
+}
+
+.outgoing {
+  background-color: var(--primary-color);
+  color: #fff;
+  margin-left: auto;
+  text-align: right;
+}
+
+.incoming {
+  background-color: #f1f0f0;
+  color: #000;
+  margin-right: auto;
+  text-align: left;
+}
+
+.message-text {
+  margin: 0;
+}
+
+.message-timestamp {
+  font-size: 0.8rem;
+  color: #666;
+  margin-top: 0.3rem;
+}
+
+.outgoing .message-timestamp {
+  text-align: right;
+}
+
+.incoming .message-timestamp {
+  text-align: left;
+}
+
+/************************
+ *   ANNOUNCEMENT BANNER
+ ************************/
+.announcement-banner {
+  background-color: var(--primary-color);
+  font-size: xx-large;
+  color: #fff;
+  text-align: center;
+  border: 3px dashed #750000;
+}
+
+.announcement-banner p {
+  margin: 0.5rem 0;
+}
+
+.maintenance-message {
+  font-size: large;
+  font-weight: 600;
+  color: #de0303;
+}
+
+.delete-button {
+  background-color: var(--secondary-color);
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.delete-button:hover {
+  background-color: #d43f3f;
+}
+/************************
+ *   TOGGLE BAR
+ ************************/
+.toggle-bar {
+  display: flex;
+  background-color: #eee;
+  border-radius: 30px;
+  overflow: hidden;
+  max-width: 400px;
+  margin: 1rem auto; /* center the toggle bar */
+}
+
+.toggle-bar input[type="radio"] {
+  display: none;
+}
+
+.toggle-bar label {
+  flex: 1;
+  text-align: center;
+  padding: 0.8rem 1rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+  color: var(--dark-color);
+}
+
+.toggle-bar input[type="radio"]:checked + label {
+  background-color: var(--primary-color);
+  color: #fff;
+}
+/* Notification styles */
+.notification {
+  position: relative;
+}
+
+.notification a {
+  position: relative;
+  display: inline-block;
+  color: #fff;
+  text-decoration: none;
+}
+
+.notification .badge {
+  position: absolute;
+  top: -5px;
+  right: -10px;
+  background: var(--secondary-color);
+  color: #fff;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 12px;
+}
+
+.notification-dropdown {
+  display: none;
+  position: absolute;
+  right: 0;
+  background: #fff;
+  color: var(--dark-color);
+  min-width: 250px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  z-index: 1000;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.notification-dropdown .notification-item {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+}
+
+.notification-dropdown .notification-item:hover {
+  background: #f9f9f9;
+}
+
+.notification-dropdown .notification-item:last-child {
+  border-bottom: none;
+}

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin - Chat Logs</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="{{ url_for('home') }}" class="nav-brand">VolunteerVista</a>
+      <ul class="nav-links">
+        <li><a href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
+        <li><a href="{{ url_for('admin_logout') }}">Logout</a></li>
+      </ul>
+    </div>
+  </nav>
+  <div class="container" style="padding:2rem;">
+    <h1>Chat Logs</h1>
+    <ul>
+      {% for msg in chat_logs %}
+      <li>
+        [{{ msg.timestamp.strftime("%Y-%m-%d %H:%M:%S") }}]
+        {% if msg.sender_type == 'ngo' %}
+          {{ msg.conversation.ngo_email }} <strong>({{ msg.conversation.ngo.ngo_name }})</strong> to {{ msg.conversation.volunteer_email }} <strong>({{ msg.conversation.volunteer.first_name }} {{ msg.conversation.volunteer.last_name }})</strong>
+        {% elif msg.sender_type == 'volunteer' %}
+          {{ msg.conversation.volunteer_email }} <strong>({{ msg.conversation.volunteer.first_name }} {{ msg.conversation.volunteer.last_name }})</strong> to {{ msg.conversation.ngo_email }} <strong>({{ msg.conversation.ngo.ngo_name }})</strong>
+        {% else %}
+          Admin: {{ msg.sender_type }}
+        {% endif %}
+        : {{ msg.content }}
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  <footer class="footer">
+    <small>© 2025 VolunteerVista</small>
+  </footer>
+</body>
+</html>

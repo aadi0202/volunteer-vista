@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin - Join Request Oversight</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="{{ url_for('home') }}" class="nav-brand">VolunteerVista</a>
+      <ul class="nav-links">
+        <li><a href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
+        <li><a href="{{ url_for('admin_logout') }}">Logout</a></li>
+      </ul>
+    </div>
+  </nav>
+  <div class="container" style="padding:2rem;">
+    <h1>Join Request Oversight</h1>
+    <ul>
+      {% for jr in join_requests %}
+        <li>
+          NGO: {{ jr.ngo_email }} - Volunteer: {{ jr.volunteer_email }} - Status: {{ jr.status }}
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+  <footer class="footer">
+    <small>© 2025 VolunteerVista</small>
+  </footer>
+</body>
+</html>

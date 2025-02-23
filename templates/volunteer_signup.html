@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Volunteer Sign Up - Multi-Step</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Poppins:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
+    <style>
+      /* Simple styling for multi-step sections */
+      .form-step {
+        display: none;
+      }
+      .form-step.active {
+        display: block;
+      }
+      .step-nav {
+        margin-top: 1rem;
+      }
+      .step-nav button {
+        margin-right: 0.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+      <div class="nav-container">
+        <a href="{{ url_for('home') }}" class="nav-brand">
+          <img src="{{ url_for('static', filename='images/logo.png') }}" alt="VolunteerVista Logo" width="40" height="40" style="vertical-align: middle;">
+          VolunteerVista
+        </a>
+        <ul class="nav-links">
+          <li><a href="{{ url_for('home') }}">Home</a></li>
+          <li><a href="{{ url_for('volunteer_login') }}">Login</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Multi-Step Volunteer Signup Form -->
+    <div class="container">
+      <div class="card">
+        <h1>Volunteer Sign Up</h1>
+        {% if error %}
+          <p class="error-message">{{ error }}</p>
+        {% endif %}
+
+        <!-- ONE form, split into 3 "steps" with JavaScript -->
+        <form
+          action="{{ url_for('volunteer_signup') }}"
+          method="POST"
+          enctype="multipart/form-data"
+          id="volunteer-signup-form"
+        >
+          <!-- STEP 1 -->
+          <div class="form-step active" id="step1">
+            <h2>Sign-Up Form (Page 1)</h2>
+            <p>
+              <label for="email">Mail Address:</label>
+              <input type="email" id="email" name="email" required />
+            </p>
+            <p>
+              <label for="first_name">First Name:</label>
+              <input type="text" id="first_name" name="first_name" required />
+            </p>
+            <p>
+              <label for="last_name">Last Name:</label>
+              <input type="text" id="last_name" name="last_name" required />
+            </p>
+            <p>
+              <label for="username">Username:</label>
+              <input type="text" id="username" name="username" required />
+            </p>
+            <p style="position: relative;">
+              <label for="password">Password:</label>
+              <input type="password" id="password" name="password" required style="padding-right: 3rem;">
+              <img src="{{ url_for('static', filename='images/show.png') }}" alt="Toggle Password Visibility" class="toggle-password" onclick="togglePasswordVisibility()" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; width: 35px; height: 25px;">
+            </p>
+            <p>
+              <label for="phone">Phone Number:</label>
+              <input type="text" id="phone" name="phone" />
+            </p>
+            <p>
+              <label for="state">State:</label>
+              <input type="text" id="state" name="state" />
+            </p>
+            <p>
+              <label for="city">City:</label>
+              <input type="text" id="city" name="city" />
+            </p>
+            <p>
+              <label for="address">Address:</label>
+              <input type="text" id="address" name="address" />
+            </p>
+            <p>
+              <label for="age">Age:</label>
+              <input type="number" id="age" name="age" />
+            </p>
+            <p>
+              <label for="profile_pic">Upload Image (optional):</label>
+              <input type="file" id="profile_pic" name="profile_pic" accept="image/*" />
+            </p>
+            <div class="step-nav">
+              <button type="button" onclick="nextStep(1)">Next &raquo;</button>
+            </div>
+          </div>
+
+          <!-- STEP 2 -->
+          <div class="form-step" id="step2">
+            <h2>Background and Experience (Page 2)</h2>
+            <p>
+              <label for="volunteer_experience">Volunteer Experience:</label>
+              <textarea id="volunteer_experience" name="volunteer_experience"></textarea>
+            </p>
+            <p>
+              <label for="work_experience">Work Experience:</label>
+              <textarea id="work_experience" name="work_experience"></textarea>
+            </p>
+            <p>
+              <label for="education">Education:</label>
+              <textarea id="education" name="education"></textarea>
+            </p>
+            <div class="step-nav">
+              <button type="button" onclick="prevStep(2)">&laquo; Previous</button>
+              <button type="button" onclick="nextStep(2)">Next &raquo;</button>
+            </div>
+          </div>
+
+          <!-- STEP 3 -->
+          <div class="form-step" id="step3">
+            <h2>Other (Page 3)</h2>
+            <p>
+              <label for="skills">Skills:</label>
+              <input type="text" id="skills" name="skills" />
+            </p>
+            <p>
+              <label for="areas_of_interest">Areas of Interest:</label>
+              <input type="text" id="areas_of_interest" name="areas_of_interest" />
+            </p>
+            <p>
+              <label for="certifications">Certifications / Special Training:</label>
+              <input type="text" id="certifications" name="certifications" />
+            </p>
+            <p>
+              <label for="availability">Availability:</label>
+              <input type="text" id="availability" name="availability" />
+            </p>
+            <p>
+              <label for="duration">Duration:</label>
+              <input type="text" id="duration" name="duration" />
+            </p>
+            <p>
+              <label for="start_date">Start Dates:</label>
+              <input type="text" id="start_date" name="start_date" />
+            </p>
+            <div class="step-nav">
+              <button type="button" onclick="prevStep(3)">&laquo; Previous</button>
+              <button type="submit">Sign Up</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      function nextStep(current) {
+        document.getElementById('step' + current).classList.remove('active');
+        document.getElementById('step' + (current + 1)).classList.add('active');
+      }
+      function prevStep(current) {
+        document.getElementById('step' + current).classList.remove('active');
+        document.getElementById('step' + (current - 1)).classList.add('active');
+      }
+    </script>
+    <!-- Footer -->
+    <footer class="footer">
+      <small>
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="VolunteerVista Logo" width="30" height="30" style="vertical-align: middle;">
+        © 2025 VolunteerVista
+      </small>
+    </footer>
+    <script>
+      function togglePasswordVisibility() {
+        const passwordInput = document.getElementById('password');
+        const toggleImage = document.querySelector('.toggle-password');
+        if (passwordInput.type === 'password') {
+          passwordInput.type = 'text';
+          toggleImage.src = "{{ url_for('static', filename='images/hide.png') }}";
+        } else {
+          passwordInput.type = 'password';
+          toggleImage.src = "{{ url_for('static', filename='images/show.png') }}";
+        }
+      }
+    </script>
+  </body>
+</html>

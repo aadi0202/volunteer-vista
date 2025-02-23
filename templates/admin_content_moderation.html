@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin - Content Moderation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="{{ url_for('home') }}" class="nav-brand">VolunteerVista</a>
+      <ul class="nav-links">
+        <li><a href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
+        <li><a href="{{ url_for('admin_logout') }}">Logout</a></li>
+      </ul>
+    </div>
+  </nav>
+  <div class="container" style="padding:2rem;">
+    <h1>Content Moderation</h1>
+    <h2>Flagged NGO Profiles</h2>
+    <ul>
+      {% for ngo in flagged_ngos %}
+        <li>{{ ngo.ngo_name }} - {{ ngo.email }}</li>
+      {% else %}
+        <li>No flagged NGO profiles.</li>
+      {% endfor %}
+    </ul>
+    <h2>Flagged Volunteer Profiles</h2>
+    <ul>
+      {% for volunteer in flagged_volunteers %}
+        <li>{{ volunteer.first_name }} {{ volunteer.last_name }} - {{ volunteer.email }}</li>
+      {% else %}
+        <li>No flagged Volunteer profiles.</li>
+      {% endfor %}
+    </ul>
+    <h2>Flagged Listings</h2>
+    <ul>
+      {% for listing in flagged_listings %}
+        <li>{{ listing.ngo_name }} - {{ listing.ngo_summary }}</li>
+      {% else %}
+        <li>No flagged listings.</li>
+      {% endfor %}
+    </ul>
+  </div>
+  <footer class="footer">
+    <small>© 2025 VolunteerVista</small>
+  </footer>
+</body>
+</html>

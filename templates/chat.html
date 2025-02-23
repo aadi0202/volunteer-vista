@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Chat - VolunteerVista</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <!-- Use the shared styles.css -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <!-- Socket.IO Client -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.min.js"></script>
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="{{ url_for('home') }}" class="nav-brand">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="VolunteerVista Logo" width="40" height="40" style="vertical-align: middle;">
+        VolunteerVista
+      </a>
+      <ul class="nav-links">
+        <li><a href="{{ url_for('home') }}">Home</a></li>
+        <li><a href="{{ url_for('listings') }}">View Listings</a></li>
+        {% if session.get('user_type') == 'ngo' %}
+          <li><a href="{{ url_for('ngo_dashboard') }}">Dashboard</a></li>
+        {% elif session.get('user_type') == 'volunteer' %}
+          <li><a href="{{ url_for('volunteer_dashboard') }}">Dashboard</a></li>
+        {% endif %}
+        <li>
+          {% if session.get('user_type') == 'ngo' %}
+            <a href="{{ url_for('ngo_logout') }}">Logout</a>
+          {% elif session.get('user_type') == 'volunteer' %}
+            <a href="{{ url_for('volunteer_logout') }}">Logout</a>
+          {% endif %}
+        </li>
+      </ul>
+    </div>
+  </nav>
+  
+  <div class="container">
+    <!-- Back Button -->
+    <a class="back-button" href="{% if session.get('user_type') == 'ngo' %}{{ url_for('ngo_dashboard') }}{% else %}{{ url_for('volunteer_dashboard') }}{% endif %}">Back to Dashboard</a>
+    
+    <!-- Partner Info Card -->
+    <div class="partner-card">
+      {% if session.get('user_type') == 'ngo' %}
+        <img src="{{ url_for('static', filename=partner_info.profile_pic or 'images/image_spare.png') }}" alt="Volunteer Profile Pic">
+        <div class="volunteer-info">
+          <h3>{{ partner_info.first_name }} {{ partner_info.last_name }}</h3>
+          <p>Email: {{ partner_info.email }}</p>
+          {% if partner_info.phone %}<p>Phone: {{ partner_info.phone }}</p>{% endif %}
+        </div>
+      {% elif session.get('user_type') == 'volunteer' %}
+        <img src="{{ url_for('static', filename=partner_info.logo_filename or 'images/image_spare.png') }}" alt="NGO Logo">
+        <div class="ngo-info">
+          <h3>{{ partner_info.ngo_name }}</h3>
+          <p>{{ partner_info.ngo_summary }}</p>
+        </div>
+      {% endif %}
+    </div>
+    
+    <h1>Chat</h1>
+    <div id="chat">
+      {% for msg in messages %}
+        {% if msg.sender_type == session.get('user_type') %}
+          <div class="message outgoing">
+            <p class="message-text">{{ msg.content }}</p>
+            <p class="message-timestamp">{{ msg.timestamp.strftime("%Y-%m-%d %H:%M:%S") }}</p>
+          </div>
+        {% else %}
+          <div class="message incoming">
+            <p class="message-text">{{ msg.content }}</p>
+            <p class="message-timestamp">{{ msg.timestamp.strftime("%Y-%m-%d %H:%M:%S") }}</p>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+    <input type="text" id="message-input" placeholder="Type your message here...">
+    <button id="send-btn">Send</button>
+  </div>
+
+  <script>
+    // Set the current user's type for use in the JS code
+    var currentUserType = "{{ session['user_type'] }}";
+    var conversationId = "{{ conversation.id }}";
+    // Connect to the Socket.IO server
+    var socket = io();
+    socket.on('connect', function() {
+      socket.emit('join', {'conversation_id': conversationId});
+    });
+
+    document.getElementById('send-btn').onclick = function() {
+      var message = document.getElementById('message-input').value;
+      if(message.trim().length > 0) {
+        var senderType = currentUserType;
+        socket.emit('send_message', {
+          'conversation_id': conversationId,
+          'sender_type': senderType,
+          'message': message
+        });
+        document.getElementById('message-input').value = '';
+      }
+    };
+
+    socket.on('receive_message', function(data) {
+      var chatDiv = document.getElementById('chat');
+      var messageDiv = document.createElement('div');
+      messageDiv.classList.add('message');
+      if(data.sender_type === currentUserType) {
+        messageDiv.classList.add('outgoing');
+      } else {
+        messageDiv.classList.add('incoming');
+      }
+      var messageText = document.createElement('p');
+      messageText.classList.add('message-text');
+      messageText.textContent = data.message;
+      var messageTimestamp = document.createElement('p');
+      messageTimestamp.classList.add('message-timestamp');
+      messageTimestamp.textContent = data.timestamp;
+      messageDiv.appendChild(messageText);
+      messageDiv.appendChild(messageTimestamp);
+      chatDiv.appendChild(messageDiv);
+      chatDiv.scrollTop = chatDiv.scrollHeight;
+    });
+  </script>
+</body>
+</html>
