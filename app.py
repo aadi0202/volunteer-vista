@@ -511,7 +511,7 @@ def admin_delete_ngo():
         return redirect(url_for('admin_users'))
 
     # Query the NGO user (adjust query according to your ORM/model)
-    ngo = Ngo.query.filter_by(email=email).first()
+    ngo = NGO.query.filter_by(email=email).first()
     if ngo:
         # If there are associated files (like logos), delete them if needed.
         db.session.delete(ngo)
