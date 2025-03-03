@@ -7,15 +7,15 @@ venv/
 env/
 .virtualenvs/
 
-# Instance folder for Flask (if it contains sensitive config)
+# Folder for Flasks
 instance/
 migrations/
 # Environment variables
 secret_key.env
+# Random Files
 Flow chart.png
 Website Imaging.png
 structure.rtf
-git status
 
 # OS-specific files
 .DS_Store
