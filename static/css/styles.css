@@ -1,13 +1,16 @@
 /************************
  *   CSS VARIABLES
  ************************/
+ @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;700&family=Figtree:wght@300;400;600&display=swap');
+
+
  :root {
   --primary-color: #00bcd4;   /* Light teal */
   --secondary-color: #ff5252; /* Vibrant red */
   --dark-color: #111111;
   --light-color: #f8f9fa;
-  --heading-font: 'Montserrat', sans-serif;
-  --body-font: 'Poppins', sans-serif;
+  --heading-font: 'Be Vietnam Pro', sans-serif;
+  --body-font: 'Figtree', sans-serif;
 }
 
 /************************
@@ -148,23 +151,90 @@ button:hover {
 .nav-links a:hover {
   color: var(--secondary-color);
 }
+.nav-toggle {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #fff;
+  cursor: pointer;
+}
+@media (max-width: 768px) {
+  .nav-toggle {
+    display: block;
+  }
+  
+  /* Hide the navigation links initially */
+  .nav-links {
+    position: absolute;
+    top: 60px; /* Adjust based on your navbar height */
+    right: 0;
+    background-color: #333;
+    flex-direction: column;
+    width: 200px;
+    padding: 1rem;
+    display: none;
+  }
+  
+  .nav-links li {
+    margin-bottom: 1rem;
+  }
+  
+  /* Show the menu when active */
+  .nav-links.active {
+    display: flex;
+  }
+}
 
 /************************
  *   HERO SECTION
  ************************/
-.hero-section {
-  min-height: 60vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 2rem;
-  background: radial-gradient(circle, var(--dark-color), var(--primary-color));
-  text-align: center;
-  color: #fff;
+ /* Keyframes for the animated gradient background */
+@keyframes gradientAnimation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
-.hero-section h1 {
+.hero-section {
+  position: relative; /* allows wave divider to be positioned absolutely */
+  min-height: 60vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: #fff;
+  padding: 2rem;
+
+  /* Animated gradient background */
+  background: linear-gradient(
+    120deg,
+    var(--primary-color),
+    var(--secondary-color),
+    var(--dark-color)
+  );
+  background-size: 600% 600%;
+  animation: gradientAnimation 10s ease infinite;
+}
+
+/* Glassmorphism overlay to highlight content */
+.hero-content {
+  
+  background: rgba(255, 255, 255, 0.2); /* semi-transparent white */
+  backdrop-filter: blur(10px);          /* blur behind the overlay */
+  padding: 2rem 3rem;
+  border-radius: 8px;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.hero-content h1 {
   font-size: 3rem;
   margin-bottom: 1rem;
   font-family: var(--heading-font);
@@ -173,7 +243,7 @@ button:hover {
 .hero-tagline {
   font-size: 1.2rem;
   max-width: 600px;
-  margin-bottom: 2rem;
+  margin: 0 auto 2rem;
 }
 
 .hero-button {
@@ -195,6 +265,7 @@ button:hover {
  *   ABOUT SECTION
  ************************/
 .about-section {
+  z-index: 1; /* place overlay on top of the gradient background */
   max-width: 800px;
   margin: 3rem auto;
   padding: 0 1rem;
@@ -206,7 +277,7 @@ button:hover {
   font-family: var(--heading-font);
 }
 
-.about-section p {
+.about-section p {  
   font-size: 1rem;
   line-height: 1.6;
 }
@@ -278,9 +349,23 @@ button:hover {
   gap: 1rem;
   margin-bottom: 1rem;
 }
+.dashboard-tabs button {
+  padding: 0.5rem 1rem;
+  background-color: var(--primary-color);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
 
 .dashboard-content {
-  margin-top: 1rem;
+  margin-top: 20px;
+}
+
+.dashboard-tabs button:hover {
+  background-color: var(--secondary-color);
 }
 
 /************************
@@ -320,6 +405,7 @@ button:hover {
 }
 
 .modal {
+  display: none;
   position: fixed;
   z-index: 999;
   left: 0;
@@ -343,9 +429,13 @@ button:hover {
 }
 
 .close {
+  position: absolute;
+  top: 10px;
+  right: 20px;
   color: #aaa;
   font-size: 28px;
   font-weight: bold;
+  cursor: pointer;
 }
 
 .close:hover,
@@ -356,11 +446,55 @@ button:hover {
 }
 
 /************************
- *   VOLUNTEER DASHBOARD
+ * VOLUNTEER DASHBOARD &
+ SIGNUP FORM
  ************************/
 .volunteer-profile {
   text-align: center;
   margin: 1rem 0;
+}
+.form-step {
+  display: none;
+}
+.form-step.active {
+  display: block;
+}
+.step-nav {
+  margin-top: 1rem;
+}
+.step-nav button {
+  margin-right: 0.5rem;
+}
+/************************
+ *   ADMIN DASHBOARD
+ ************************/
+ .user-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+.user-card img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+.edit-button {
+  padding: 0.5rem 1rem;
+  background-color: var(--primary-color);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.edit-button:hover {
+  background-color: var(--secondary-color);
 }
 
 /************************

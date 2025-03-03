@@ -16,11 +16,7 @@ secret_key = os.environ.get("SECRET_KEY")
 if not secret_key:
     raise ValueError("No SECRET_KEY set for Flask application")
 app.secret_key = secret_key
-
-# Configure upload folder (inside the static folder)
 app.config['UPLOAD_FOLDER'] = os.path.join('static', 'uploads')
-
-# Configure SQLAlche    my to use SQLite (you can later switch to PostgreSQL or MySQL if needed)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite3'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
@@ -47,6 +43,16 @@ class NGO(db.Model):
     ngo_name = db.Column(db.String(120), nullable=False)
     ngo_summary = db.Column(db.Text, nullable=False)
     logo_filename = db.Column(db.String(200), nullable=False, default='images/image_spare.png')
+    official_name = db.Column(db.String(120), nullable=False)
+    registration_number = db.Column(db.String(100), nullable=False)
+    registration_date = db.Column(db.Date, nullable=False)
+    ngo_type = db.Column(db.String(100), nullable=False)
+    pan_number = db.Column(db.String(100), nullable=False)
+    address = db.Column(db.Text, nullable=False)
+    contact_number = db.Column(db.String(20), nullable=False)
+    website = db.Column(db.String(200), nullable=True)
+    volunteer_details = db.Column(db.Text, nullable=False)
+    darpan_cert_filename = db.Column(db.String(200), nullable=True)
 
 class Volunteer(db.Model):
     __tablename__ = 'volunteers'
@@ -230,14 +236,39 @@ def admin_edit_ngo():
         ngo.ngo_summary = request.form.get('ngo_summary')
         # Update password (admin can view and change it)
         ngo.password = request.form.get('password')
+        
+        # Update new fields
+        ngo.official_name = request.form.get('official_name')
+        ngo.registration_number = request.form.get('registration_number')
+        registration_date_str = request.form.get('registration_date')
+        try:
+            ngo.registration_date = datetime.strptime(registration_date_str, '%Y-%m-%d').date()
+        except Exception:
+            flash("Invalid registration date format.", "error")
+            return redirect(url_for('admin_users'))
+        ngo.ngo_type = request.form.get('ngo_type')
+        ngo.pan_number = request.form.get('pan_number')
+        ngo.address = request.form.get('address')
+        ngo.contact_number = request.form.get('contact_number')
+        ngo.website = request.form.get('website')
+        ngo.volunteer_details = request.form.get('volunteer_details')
+        
+        # Handle logo update/deletion
         file = request.files.get('logo')
         if file and file.filename:
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             ngo.logo_filename = 'uploads/' + filename
-        # If the delete checkbox is checked, set to default image
         if request.form.get('delete_logo'):
             ngo.logo_filename = 'images/image_spare.png'
+        
+        # Handle DARPAN certification update (optional)
+        darpan_file = request.files.get('darpan_cert')
+        if darpan_file and darpan_file.filename:
+            darpan_filename = secure_filename(darpan_file.filename)
+            darpan_file.save(os.path.join(app.config['UPLOAD_FOLDER'], darpan_filename))
+            ngo.darpan_cert_filename = 'uploads/' + darpan_filename
+        
         db.session.commit()
         flash("NGO account updated successfully.", "success")
     else:
@@ -419,9 +450,33 @@ def ngo_login():
 def ngo_signup():
     if request.method == 'POST':
         email = request.form.get('email')
+        # Check if the email is already registered
+        if NGO.query.filter_by(email=email).first():
+            error = "Email is already registered. Please use a different email."
+            return render_template('ngo_signup.html', error=error)
+        
         password = request.form.get('password')
         ngo_name = request.form.get('ngo_name')
         ngo_summary = request.form.get('ngo_summary')
+        
+        # New form fields
+        official_name = request.form.get('official_name')
+        registration_number = request.form.get('registration_number')
+        registration_date_str = request.form.get('registration_date')
+        ngo_type = request.form.get('ngo_type')
+        pan_number = request.form.get('pan_number')
+        address = request.form.get('address')
+        contact_number = request.form.get('contact_number')
+        website = request.form.get('website')
+        volunteer_details = request.form.get('volunteer_details')
+        
+        # Process registration date (expects format YYYY-MM-DD)
+        try:
+            registration_date = datetime.strptime(registration_date_str, '%Y-%m-%d').date()
+        except Exception:
+            flash("Invalid date format. Please use YYYY-MM-DD.", "error")
+            return render_template('ngo_signup.html')
+        
         # Handle file upload for NGO logo
         file = request.files.get('logo')
         if file and file.filename != '':
@@ -430,8 +485,33 @@ def ngo_signup():
             logo_filename = 'uploads/' + filename  # Relative to static folder
         else:
             logo_filename = 'images/image_spare.png'
-        new_ngo = NGO(email=email, password=password, ngo_name=ngo_name,
-                      ngo_summary=ngo_summary, logo_filename=logo_filename)
+        
+        # Handle file upload for optional DARPAN ID/Tax Exemption Certification
+        darpan_file = request.files.get('darpan_cert')
+        if darpan_file and darpan_file.filename != '':
+            darpan_filename = secure_filename(darpan_file.filename)
+            darpan_file.save(os.path.join(app.config['UPLOAD_FOLDER'], darpan_filename))
+            darpan_cert_filename = 'uploads/' + darpan_filename
+        else:
+            darpan_cert_filename = None
+        
+        new_ngo = NGO(
+            email=email,
+            password=password,
+            ngo_name=ngo_name,
+            ngo_summary=ngo_summary,
+            logo_filename=logo_filename,
+            official_name=official_name,
+            registration_number=registration_number,
+            registration_date=registration_date,
+            ngo_type=ngo_type,
+            pan_number=pan_number,
+            address=address,
+            contact_number=contact_number,
+            website=website,
+            volunteer_details=volunteer_details,
+            darpan_cert_filename=darpan_cert_filename
+        )
         db.session.add(new_ngo)
         db.session.commit()
         session['user'] = email
@@ -474,8 +554,26 @@ def ngo_edit():
     ngo_email = session.get('user')
     ngo = NGO.query.filter_by(email=ngo_email).first()
     if ngo:
+        # Update existing fields
         ngo.ngo_name = request.form.get('ngo_name')
         ngo.ngo_summary = request.form.get('ngo_summary')
+        
+        # Update new fields
+        ngo.official_name = request.form.get('official_name')
+        ngo.registration_number = request.form.get('registration_number')
+        registration_date_str = request.form.get('registration_date')
+        try:
+            ngo.registration_date = datetime.strptime(registration_date_str, '%Y-%m-%d').date()
+        except Exception:
+            flash("Invalid registration date format. Please use YYYY-MM-DD.")
+            return redirect(url_for('ngo_dashboard', tab='profile'))
+        ngo.ngo_type = request.form.get('ngo_type')
+        ngo.pan_number = request.form.get('pan_number')
+        ngo.address = request.form.get('address')
+        ngo.contact_number = request.form.get('contact_number')
+        ngo.website = request.form.get('website')
+        ngo.volunteer_details = request.form.get('volunteer_details')
+        
         # Handle logo update/deletion
         file = request.files.get('logo')
         if file and file.filename != '':
@@ -484,6 +582,14 @@ def ngo_edit():
             ngo.logo_filename = 'uploads/' + filename
         elif request.form.get('delete_logo'):
             ngo.logo_filename = 'images/image_spare.png'
+        
+        # Handle DARPAN certificate update
+        darpan_file = request.files.get('darpan_cert')
+        if darpan_file and darpan_file.filename != '':
+            darpan_filename = secure_filename(darpan_file.filename)
+            darpan_file.save(os.path.join(app.config['UPLOAD_FOLDER'], darpan_filename))
+            ngo.darpan_cert_filename = 'uploads/' + darpan_filename
+
         db.session.commit()
         flash("Profile updated successfully.")
     return redirect(url_for('ngo_dashboard', tab='profile'))
@@ -544,6 +650,9 @@ def volunteer_login():
 def volunteer_signup():
     if request.method == 'POST':
         email = request.form.get('email')
+        if Volunteer.query.filter_by(email=email).first():
+            error = "Email is already registered. Please use a different email."
+            return render_template('volunteer_signup.html', error=error)
         password = request.form.get('password')
         first_name = request.form.get('first_name')
         last_name = request.form.get('last_name')

@@ -4,11 +4,6 @@
     <meta charset="UTF-8" />
     <title>Home - VolunteerVista</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Google Fonts: Poppins & Montserrat -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Poppins:wght@300;400;600&display=swap"
-      rel="stylesheet"
-    />
     <!-- Link to Your Custom CSS (no Bootstrap) -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
   </head>
@@ -20,6 +15,10 @@
           <img src="{{ url_for('static', filename='images/logo.png') }}" alt="VolunteerVista Logo" width="40" height="40" style="vertical-align: middle;">
           VolunteerVista
         </a>
+        <!-- Hamburger icon for mobile screens -->
+        <button class="nav-toggle" aria-label="Toggle navigation">
+          &#9776;
+        </button>
         <ul class="nav-links">
           <li><a href="{{ url_for('listings') }}">Listings</a></li>
           {% if session.get('user_type') == 'ngo' %}
@@ -41,24 +40,36 @@
     </nav>
     {% if system_config and system_config.announcement %}
       <div class="announcement-banner">
-        <p> <strong>Announcement: </strong>{{ system_config.announcement }}</p>
+        <p><strong>Announcement:</strong> {{ system_config.announcement }}</p>
         {% if system_config.maintenance_mode %}
-        <p class="maintenance-message">The site is currently under maintenance. You might experience issues. Apologies for the inconvenience.</p>
+          <p class="maintenance-message">The site is currently under maintenance. You might experience issues. Apologies for the inconvenience.</p>
         {% endif %}
       </div>
     {% endif %}
     
     <!-- Hero Section -->
     <header class="hero-section">
-      <h1>
-        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="VolunteerVista Logo" width="50" height="50" style="vertical-align: middle;">
-        VolunteerVista
-      </h1>
-      <p class="hero-tagline">Empowering Change, One Connection at a Time</p>
-      <a href="{{ url_for('listings') }}" class="hero-button">VIEW LISTINGS!</a>
+      <!-- Optional Glassmorphism Overlay -->
+      <div class="hero-content">
+        <h1>
+          <img 
+            src="{{ url_for('static', filename='images/logo.png') }}" 
+            alt="VolunteerVista Logo" 
+            width="50" 
+            height="50" 
+            style="vertical-align: middle;"
+          >
+          VolunteerVista
+        </h1>
+        <p class="hero-tagline">Empowering Change, One Connection at a Time</p>
+        <a href="{{ url_for('listings') }}" class="hero-button">VIEW LISTINGS!</a>
+      </div>
+
+      
     </header>
 
     <!-- About Section -->
+    
     <section class="about-section">
       <h2>About the Website</h2>
       <p>
@@ -88,5 +99,15 @@
         © 2025 VolunteerVista
       </small>
     </footer>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const navToggle = document.querySelector('.nav-toggle');
+        const navLinks = document.querySelector('.nav-links');
+    
+        navToggle.addEventListener('click', function() {
+          navLinks.classList.toggle('active');
+        });
+      });
+    </script>
   </body>
 </html>

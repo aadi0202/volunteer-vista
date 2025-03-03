@@ -5,55 +5,6 @@
     <title>Volunteer Dashboard - VolunteerVista</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <style>
-      .dashboard-tabs button {
-      padding: 0.5rem 1rem;
-      background-color: var(--primary-color);
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: background-color 0.3s ease;
-    }
-
-    .dashboard-tabs button:hover {
-      background-color: var(--secondary-color);
-    }
-
-    .dashboard-content {
-      margin-top: 20px;
-    }
-      /* Modal styling */
-      .modal {
-        display: none;
-        position: fixed;
-        z-index: 1;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        overflow: auto;
-        background-color: rgba(0,0,0,0.4);
-      }
-      .modal-content {
-        background: #fff;
-        padding: 20px;
-        position: relative;
-        max-width: 600px;
-        margin: 100px auto;
-        border-radius: 8px;
-      }
-      .close {
-        position: absolute;
-        top: 10px;
-        right: 20px;
-        cursor: pointer;
-        font-size: 24px;
-      }
-    </style>
   </head>
   <body>
     <!-- Navigation Bar -->
@@ -63,6 +14,9 @@
           <img src="{{ url_for('static', filename='images/logo.png') }}" alt="VolunteerVista Logo" width="40" height="40" style="vertical-align: middle;">
           VolunteerVista
         </a>
+        <button class="nav-toggle" aria-label="Toggle navigation">
+          &#9776;
+        </button>
         <ul class="nav-links">
           <li><a href="{{ url_for('home') }}">Home</a></li>
           <li><a href="{{ url_for('listings') }}">View Listings</a></li>
@@ -109,10 +63,9 @@
         <div class="ngo-listings">
           {% for ngo in joined_ngos %}
             <!-- NGO Card with clickable modal trigger -->
-            <div class="ngo-card" style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; cursor: pointer;" onclick="openNgoModal('{{ ngo.id }}')">
+            <div class="ngo-card" style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; cursor: pointer;" onclick="openNgoModal('{{ ngo.email }}')">
               <img src="{{ url_for('static', filename=ngo.logo_filename or 'images/image_spare.png') }}" 
                   alt="NGO Logo" 
-                  class="ngo-image" 
                   style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%;">
               <div class="ngo-info">
                 <h3>{{ ngo.ngo_name }}</h3>
@@ -123,16 +76,30 @@
             </div>
             
             <!-- Modal for displaying NGO details -->
-            <div class="modal" id="ngo-modal-{{ ngo.id }}">
+            <div class="modal" id="ngo-modal-{{ ngo.email }}">
               <div class="modal-content">
-                <span class="close" onclick="closeNgoModal('{{ ngo.id }}')">&times;</span>
+                <span class="close" onclick="closeNgoModal('{{ ngo.email }}')">&times;</span>
                 <h2>{{ ngo.ngo_name }}</h2>
                 <img src="{{ url_for('static', filename=ngo.logo_filename or 'images/image_spare.png') }}" 
                     alt="NGO Logo" 
                     style="width: 80px; height: 80px; object-fit: cover; border-radius: 50%; float: right; margin-left: 10px;">
                 <p><strong>Summary:</strong> {{ ngo.ngo_summary }}</p>
                 <p><strong>Status:</strong> {{ ngo.join_status or 'Pending' }}</p>
-                <!-- Add more NGO details here if available -->
+                <p><strong>Registration Number:</strong> {{ ngo.registration_number }}</p>
+                <p>
+                  <strong>Registration Date:</strong>
+                  {{ ngo.registration_date.strftime('%Y-%m-%d') if ngo.registration_date else 'N/A' }}
+                </p>
+                <p><strong>NGO Type:</strong> {{ ngo.ngo_type }}</p>
+                <p><strong>Address:</strong> {{ ngo.address }}</p>
+                <p><strong>Contact Number:</strong> {{ ngo.contact_number }}</p>
+                {% if ngo.website %}
+                  <p>
+                    <strong>Website/Social Media:</strong>
+                    <a href="{{ ngo.website }}" target="_blank">{{ ngo.website }}</a>
+                  </p>
+                {% endif %}
+                <p><strong>Volunteer Details:</strong> {{ ngo.volunteer_details }}</p>
               </div>
             </div>
           {% endfor %}
@@ -282,15 +249,15 @@
     });
 
     // Functions to open and close NGO modals
-    function openNgoModal(ngoId) {
-      var modal = document.getElementById('ngo-modal-' + ngoId);
+        function openNgoModal(ngoIdentifier) {
+      var modal = document.getElementById('ngo-modal-' + ngoIdentifier);
       if (modal) {
         modal.style.display = 'block';
       }
     }
-    
-    function closeNgoModal(ngoId) {
-      var modal = document.getElementById('ngo-modal-' + ngoId);
+
+    function closeNgoModal(ngoIdentifier) {
+      var modal = document.getElementById('ngo-modal-' + ngoIdentifier);
       if (modal) {
         modal.style.display = 'none';
       }
@@ -336,6 +303,16 @@
         }
       }
     }
+    document.addEventListener('DOMContentLoaded', function() {
+      showTab(activeTab);
+      const navToggle = document.querySelector('.nav-toggle');
+      const navLinks = document.querySelector('.nav-links');
+  
+      navToggle.addEventListener('click', function() {
+        navLinks.classList.toggle('active');
+      });
+    });
   </script>
+  
 </body>
 </html>

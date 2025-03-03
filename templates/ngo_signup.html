@@ -4,8 +4,6 @@
   <meta charset="UTF-8">
   <title>NGO Sign Up - VolunteerVista</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
   <!-- Custom CSS -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
@@ -17,6 +15,9 @@
         <img src="{{ url_for('static', filename='images/logo.png') }}" alt="VolunteerVista Logo" width="40" height="40" style="vertical-align: middle;">
         VolunteerVista
       </a>
+      <button class="nav-toggle" aria-label="Toggle navigation">
+        &#9776;
+      </button>
       <ul class="nav-links">
         <li><a href="{{ url_for('home') }}">Home</a></li>
         <li><a href="{{ url_for('ngo_login') }}">Login</a></li>
@@ -32,6 +33,7 @@
         <p class="error-message">{{ error }}</p>
       {% endif %}
       <form action="{{ url_for('ngo_signup') }}" method="post" enctype="multipart/form-data">
+        <!-- Existing Fields -->
         <div class="form-group">
           <label for="email">Email/Username:</label>
           <input type="email" id="email" name="email" required>
@@ -39,8 +41,8 @@
         <div class="form-group" style="position: relative;">
           <label for="password">Password:</label>
           <input type="password" id="password" name="password" required style="padding-right: 3rem;">
-            <img src="{{ url_for('static', filename='images/show.png') }}" alt="Toggle Password Visibility" class="toggle-password" onclick="togglePasswordVisibility()" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; user-select: none; width: 35px; height: 25px;">
-        </div>        
+          <img src="{{ url_for('static', filename='images/show.png') }}" alt="Toggle Password Visibility" class="toggle-password" onclick="togglePasswordVisibility()" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; user-select: none; width: 35px; height: 25px;">
+        </div>
         <div class="form-group">
           <label for="ngo_name">NGO Name:</label>
           <input type="text" id="ngo_name" name="ngo_name" required>
@@ -53,6 +55,65 @@
           <label for="logo">NGO Logo (optional):</label>
           <input type="file" id="logo" name="logo" accept="image/*">
         </div>
+        
+        <!-- New Fields -->
+        <div class="form-group">
+          <label for="official_name">Official Name:</label>
+          <input type="text" id="official_name" name="official_name" required>
+        </div>
+        <div class="form-group">
+          <label for="registration_number">Registration Number:</label>
+          <input type="text" id="registration_number" name="registration_number" required>
+        </div>
+        <div class="form-group">
+          <label for="registration_date">Registration Date:</label>
+          <input type="date" id="registration_date" name="registration_date" required>
+        </div>
+        <div class="form-group">
+          <label for="ngo_type">NGO Type (Mission):</label>
+          <select name="ngo_type" id="ngo_type" required>
+              <option value="">--Select NGO Type--</option>
+              <option value="Health and Medical NGOs">Health and Medical NGOs</option>
+              <option value="Education and Literacy NGOs">Education and Literacy NGOs</option>
+              <option value="Environmental and Wildlife NGOs">Environmental and Wildlife NGOs</option>
+              <option value="Human Rights and Social Justice NGOs">Human Rights and Social Justice NGOs</option>
+              <option value="Disaster Relief and Humanitarian Aid NGOs">Disaster Relief and Humanitarian Aid NGOs</option>
+              <option value="Community Development NGOs">Community Development NGOs</option>
+              <option value="Advocacy and Policy NGOs">Advocacy and Policy NGOs</option>
+              <option value="Other">Other</option>
+    </select>
+        </div>
+        <div class="form-group">
+          <label for="pan_number">PAN Number:</label>
+          <input type="text" id="pan_number" name="pan_number" required>
+        </div>
+        <div class="form-group">
+          <label for="address">Address:</label>
+          <textarea id="address" name="address" required></textarea>
+        </div>
+        <div class="form-group">
+          <label for="contact_number">Contact Number:</label>
+          <input type="tel" id="contact_number" name="contact_number" required>
+        </div>
+        <div class="form-group">
+          <label for="website">Website / Social Media:</label>
+          <input type="url" id="website" name="website">
+        </div>
+        <div class="form-group">
+          <label for="volunteer_details">Volunteer Details:</label>
+          <textarea id="volunteer_details" name="volunteer_details" required
+            placeholder="Volunteer Requirements – Skills, experience, or specific qualifications needed.
+Types of Volunteering – Remote, On-site, Hybrid.
+Volunteer Roles – Specific roles they need help with.
+Time Commitment – One-time, Short-term, Long-term.
+Availability – Days and hours when volunteers can work.
+Number of Volunteers Needed – Helps manage volunteer applications."></textarea>
+        </div>
+        <div class="form-group">
+          <label for="darpan_cert">DARPAN ID/Tax Exemption Certification (optional):</label>
+          <input type="file" id="darpan_cert" name="darpan_cert" accept="application/pdf,image/*">
+        </div>
+        
         <div class="form-group">
           <button type="submit">Sign Up</button>
         </div>
@@ -80,6 +141,14 @@
         toggleImage.src = "{{ url_for('static', filename='images/show.png') }}";
       }
     }
+    document.addEventListener('DOMContentLoaded', function() {
+      const navToggle = document.querySelector('.nav-toggle');
+      const navLinks = document.querySelector('.nav-links');
+  
+      navToggle.addEventListener('click', function() {
+        navLinks.classList.toggle('active');
+      });
+    });
   </script>
 </body>
 </html>

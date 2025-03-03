@@ -4,27 +4,8 @@
     <meta charset="UTF-8" />
     <title>Volunteer Sign Up - Multi-Step</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Google Fonts -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Poppins:wght@300;400;600&display=swap"
-      rel="stylesheet"
-    />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
-    <style>
-      /* Simple styling for multi-step sections */
-      .form-step {
-        display: none;
-      }
-      .form-step.active {
-        display: block;
-      }
-      .step-nav {
-        margin-top: 1rem;
-      }
-      .step-nav button {
-        margin-right: 0.5rem;
-      }
-    </style>
+
   </head>
   <body>
     <!-- Navigation Bar -->
@@ -34,6 +15,9 @@
           <img src="{{ url_for('static', filename='images/logo.png') }}" alt="VolunteerVista Logo" width="40" height="40" style="vertical-align: middle;">
           VolunteerVista
         </a>
+        <button class="nav-toggle" aria-label="Toggle navigation">
+          &#9776;
+        </button>
         <ul class="nav-links">
           <li><a href="{{ url_for('home') }}">Home</a></li>
           <li><a href="{{ url_for('volunteer_login') }}">Login</a></li>
@@ -195,6 +179,14 @@
           toggleImage.src = "{{ url_for('static', filename='images/show.png') }}";
         }
       }
+      document.addEventListener('DOMContentLoaded', function() {
+      const navToggle = document.querySelector('.nav-toggle');
+      const navLinks = document.querySelector('.nav-links');
+  
+      navToggle.addEventListener('click', function() {
+        navLinks.classList.toggle('active');
+      });
+    });
     </script>
   </body>
 </html>

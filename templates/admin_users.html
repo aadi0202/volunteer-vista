@@ -6,77 +6,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- Shared styles and Google Fonts -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-  <style>
-    /* User Card Styles */
-    .user-card {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      background-color: #fff;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      padding: 1rem;
-      margin-bottom: 1rem;
-    }
-    .user-card img {
-      width: 60px;
-      height: 60px;
-      object-fit: cover;
-      border-radius: 50%;
-    }
-    .edit-button {
-      padding: 0.5rem 1rem;
-      background-color: var(--primary-color);
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-    .edit-button:hover {
-      background-color: var(--secondary-color);
-    }
-    /* Modal Styles (similar to previous modals) */
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 999;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      overflow: auto;
-      background-color: rgba(0,0,0,0.4);
-    }
-    .modal-content {
-      background-color: #fefefe;
-      margin: 10% auto;
-      padding: 20px;
-      border: 1px solid #888;
-      width: 80%;
-      max-width: 600px;
-      border-radius: 8px;
-      position: relative;
-    }
-    .close {
-      position: absolute;
-      top: 10px;
-      right: 20px;
-      color: #aaa;
-      font-size: 28px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .close:hover {
-      color: #000;
-    }
-  </style>
 </head>
 <body>
   <!-- Navigation Bar -->
   <nav class="navbar">
     <div class="nav-container">
       <a href="{{ url_for('home') }}" class="nav-brand">VolunteerVista</a>
+      <button class="nav-toggle" aria-label="Toggle navigation">
+        &#9776;
+      </button>
       <ul class="nav-links">
         <li><a href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
         <li><a href="{{ url_for('admin_logout') }}">Logout</a></li>
@@ -116,7 +54,6 @@
             <p>
               <label>Email:</label><br>
               <span>{{ ngo.email }}</span>
-              <input type="hidden" name="email" value="{{ ngo.email }}">
             </p>
             <p>
               <label for="ngo_name_{{ ngo.email }}">NGO Name:</label><br>
@@ -139,12 +76,53 @@
               <label for="delete_logo_{{ ngo.email }}">Delete Current Logo:</label>
               <input type="checkbox" id="delete_logo_{{ ngo.email }}" name="delete_logo">
             </p>
+            <!-- New Fields Start Here -->
+            <p>
+              <label for="official_name_{{ ngo.email }}">Official Name:</label><br>
+              <input type="text" id="official_name_{{ ngo.email }}" name="official_name" value="{{ ngo.official_name }}" required>
+            </p>
+            <p>
+              <label for="registration_number_{{ ngo.email }}">Registration Number:</label><br>
+              <input type="text" id="registration_number_{{ ngo.email }}" name="registration_number" value="{{ ngo.registration_number }}" required>
+            </p>
+            <p>
+              <label for="registration_date_{{ ngo.email }}">Registration Date:</label><br>
+              <input type="date" id="registration_date_{{ ngo.email }}" name="registration_date" value="{{ ngo.registration_date.strftime('%Y-%m-%d') }}" required>
+            </p>
+            <p>
+              <label for="ngo_type_{{ ngo.email }}">NGO Type:</label><br>
+              <input type="text" id="ngo_type_{{ ngo.email }}" name="ngo_type" value="{{ ngo.ngo_type }}" required>
+            </p>
+            <p>
+              <label for="pan_number_{{ ngo.email }}">PAN Number:</label><br>
+              <input type="text" id="pan_number_{{ ngo.email }}" name="pan_number" value="{{ ngo.pan_number }}" required>
+            </p>
+            <p>
+              <label for="address_{{ ngo.email }}">Address:</label><br>
+              <textarea id="address_{{ ngo.email }}" name="address" required>{{ ngo.address }}</textarea>
+            </p>
+            <p>
+              <label for="contact_number_{{ ngo.email }}">Contact Number:</label><br>
+              <input type="tel" id="contact_number_{{ ngo.email }}" name="contact_number" value="{{ ngo.contact_number }}" required>
+            </p>
+            <p>
+              <label for="website_{{ ngo.email }}">Website / Social Media:</label><br>
+              <input type="url" id="website_{{ ngo.email }}" name="website" value="{{ ngo.website }}">
+            </p>
+            <p>
+              <label for="volunteer_details_{{ ngo.email }}">Volunteer Details:</label><br>
+              <textarea id="volunteer_details_{{ ngo.email }}" name="volunteer_details" required>{{ ngo.volunteer_details }}</textarea>
+            </p>
+            <p>
+              <label for="darpan_cert_{{ ngo.email }}">Change DARPAN ID/Tax Exemption Certification:</label><br>
+              <input type="file" id="darpan_cert_{{ ngo.email }}" name="darpan_cert" accept="application/pdf,image/*">
+            </p>
+            <!-- New Fields End Here -->
             <button type="submit" class="edit-button">Save Changes</button>
           </form>
         </div>
       </div>
       {% endfor %}
-    </div>
 
     <!-- Volunteer Accounts -->
     <h2>Volunteer Accounts</h2>
@@ -285,6 +263,14 @@
     function closeVolunteerModal(email) {
       document.getElementById('volunteer-modal-' + email).style.display = 'none';
     }
+    document.addEventListener('DOMContentLoaded', function() {
+      const navToggle = document.querySelector('.nav-toggle');
+      const navLinks = document.querySelector('.nav-links');
+  
+      navToggle.addEventListener('click', function() {
+        navLinks.classList.toggle('active');
+      });
+    });
   </script>
 </body>
 </html>
