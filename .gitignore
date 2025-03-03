@@ -9,9 +9,13 @@ env/
 
 # Instance folder for Flask (if it contains sensitive config)
 instance/
-
+migrations/
 # Environment variables
 secret_key.env
+Flow chart.png
+Website Imaging.png
+structure.rtf
+git status
 
 # OS-specific files
 .DS_Store
