@@ -17,7 +17,7 @@ if not secret_key:
     raise ValueError("No SECRET_KEY set for Flask application")
 app.secret_key = secret_key
 app.config['UPLOAD_FOLDER'] = os.path.join('static', 'uploads')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite3'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///db.sqlite3')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
