@@ -1,11 +1,15 @@
 import os
+import eventlet
+eventlet.monkey_patch()
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
+
 from werkzeug.utils import secure_filename
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from dotenv import load_dotenv
 from datetime import datetime
 from flask_socketio import SocketIO, join_room, emit
+
 
 
 # Load environment variables from .env file
@@ -861,5 +865,14 @@ def listings():
 @app.context_processor
 def inject_models():
     return dict(Volunteer=Volunteer)
+
+""" @app.route('/listing/<ngo_id>')
+def listing(ngo_id):
+    ngo = NGO.query.get(ngo_id)
+    if not ngo:
+        flash("NGO not found.")
+        return redirect(url_for('listings'))
+    return render_template('listing.html', ngo=ngo)""" 
 if __name__ == '__main__':
-    socketio.run(app, debug=True)
+    port = int(os.environ.get('PORT', 5001))
+    socketio.run(app, host='0.0.0.0', port=port)

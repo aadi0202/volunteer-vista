@@ -88,7 +88,7 @@
     var currentUserType = "{{ session['user_type'] }}";
     var conversationId = "{{ conversation.id }}";
     // Connect to the Socket.IO server
-    var socket = io();
+    var socket = io.connect(window.location.origin);
     socket.on('connect', function() {
       socket.emit('join', {'conversation_id': conversationId});
     });
