@@ -183,6 +183,7 @@ button:hover {
   /* Show the menu when active */
   .nav-links.active {
     display: flex;
+    z-index: 3;
   }
 }
 
